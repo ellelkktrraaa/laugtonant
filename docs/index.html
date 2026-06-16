@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lantonAnt</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #1a1a1a;
+        }
+        button {
+            margin-bottom: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        canvas {
+            border: 1px solid #444;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="start()">Start</button>
+    <canvas id="canvas" width="800" height="800"></canvas>
+</body>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+
+    const l = 100;
+    const img = new Array(l);
+    for (let i = 0; i < img.length; i++) {
+        img[i] = new Array(l).fill(0);
+    }
+    let x = Math.floor(img.length / 2);
+    let y = Math.floor(img.length / 2);
+    let d = [1, 0];
+
+    // 比较两个数组是否相等
+    const arrEqual = (a, b) => a[0] === b[0] && a[1] === b[1];
+
+    // 右转90度
+    const turnRight = () => {
+        if (arrEqual(d, [1, 0])) d = [0, -1];      // 右→下
+        else if (arrEqual(d, [0, -1])) d = [-1, 0]; // 下→左
+        else if (arrEqual(d, [-1, 0])) d = [0, 1];  // 左→上
+        else d = [1, 0];                            // 上→右
+    };
+
+    // 左转90度
+    const turnLeft = () => {
+        if (arrEqual(d, [1, 0])) d = [0, 1];       // 右→上
+        else if (arrEqual(d, [0, 1])) d = [-1, 0];  // 上→左
+        else if (arrEqual(d, [-1, 0])) d = [0, -1]; // 左→下
+        else d = [1, 0];                            // 下→右
+    };
+
+    const xr = canvas.width / l;
+    const yr = canvas.height / l;
+
+    // 只绘制指定格子
+    const drawCell = (i, j, color) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(i * xr, j * yr, xr, yr);
+    };
+
+    const run = () => {
+        if (x < 0 || x >= l || y < 0 || y >= l) {
+            return;
+        }
+
+        if (img[x][y] === 0) {
+            turnRight();
+        } else {
+            turnLeft();
+        }
+        // 翻转颜色并绘制
+        img[x][y] = img[x][y] === 0 ? 1 : 0;
+        drawCell(x, y, img[x][y] === 0 ? '#000000' : '#ffffff');
+
+        // 前进
+        x += d[0];
+        y += d[1];
+    };
+
+    for (let i = 0; i < l; i++) {
+        for (let j = 0; j < l; j++) {
+                drawCell(i, j, '#000000');
+        }
+    }
+
+    const start = () => {
+        setInterval(() => {
+            run();
+        }, 0);
+    };
+</script>
+</html>
